@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+jalo 2026.8.13
 入口脚本 - 快速运行测试
 使用方式:
     python run.py                          # 运行默认配置（启用Allure+自动启动HTTP服务）
