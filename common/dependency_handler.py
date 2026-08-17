@@ -339,9 +339,12 @@ class DependencyHandler:
                 return False, f"断言失败，{len(fail_items)}个字段不匹配: {'; '.join(fail_items)}"
 
         # ------ 情况2：预期是键值对格式，如 code:200,msg:success ------
+        # 同时支持英文逗号"," 和中文逗号"，"作为分隔符
         if ":" in expected_str and not expected_str.startswith("{"):
             try:
-                pairs = [p.strip() for p in expected_str.split(",") if ":" in p]
+                # 先统一把中文逗号替换为英文逗号，再分割
+                normalized = expected_str.replace("，", ",")
+                pairs = [p.strip() for p in normalized.split(",") if ":" in p]
                 if pairs:
                     pass_items = []
                     fail_items = []
@@ -349,6 +352,9 @@ class DependencyHandler:
                         k, v = pair.split(":", 1)
                         k = k.strip()
                         v = v.strip()
+                        # 去掉值两端的引号（支持 "success" 和 'success' 两种写法）
+                        if len(v) >= 2 and v[0] in ('"', "'") and v[-1] == v[0]:
+                            v = v[1:-1]
                         actual_v = None
                         actual_v_str = ""
                         found_path = None
